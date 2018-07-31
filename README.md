@@ -1,6 +1,6 @@
 # mxnet-dsod
 Under development.This is re-implementations of [DSOD and grp-DSOD](https://github.com/szq0214/DSOD),which train object detector from scratch.
-More information from [DSOD: Learning Deeply Supervised Object Detectors from Scratch](https://arxiv.org/pdf/1708.01241.pdf) and [Learning Object Detectors from Scratch with Gated Recurrent Feature Pyramids](https://arxiv.org/pdf/1712.00886.pdf)
+More informations from [DSOD: Learning Deeply Supervised Object Detectors from Scratch](https://arxiv.org/pdf/1708.01241.pdf) and [Learning Object Detectors from Scratch with Gated Recurrent Feature Pyramids](https://arxiv.org/pdf/1712.00886.pdf)
 
 ## Prerequisites
 1. Python 3.6
@@ -10,7 +10,7 @@ More information from [DSOD: Learning Deeply Supervised Object Detectors from Sc
 
 ## Preparations
 1. Clone this repository.
-2. Download VOC dataset from this [released page](http://host.robots.ox.ac.uk/pascal/VOC).Make .rec file using im2rec.py and put them in floder data if you want to train on VOC.[A tutorial](https://github.com/leocvml/mxnet-im2rec_tutorial)
+2. Download VOC dataset from this [released page](http://host.robots.ox.ac.uk/pascal/VOC).Make .rec file using im2rec.py and put them in folder data if you want to train on VOC.[A tutorial](https://github.com/leocvml/mxnet-im2rec_tutorial)
 
 ## Train the model
 
