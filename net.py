@@ -2,8 +2,6 @@ from mxnet.base import numeric_types
 from mxnet import nd
 from mxnet.gluon import nn
 
-#pooling in caffe is a ceil function
-
 def conv_block(kernel_size, channels, stride, pad, dropout):
     out = nn.HybridSequential()
     out.add(
@@ -11,7 +9,6 @@ def conv_block(kernel_size, channels, stride, pad, dropout):
         nn.Activation('relu'),
         nn.Conv2D(channels, kernel_size, strides=stride, padding=pad, use_bias=False, weight_initializer='xavier')
     )
-    #conv layer without bias
     if dropout > 0:
         out.add(nn.Dropout(dropout))
     return out
