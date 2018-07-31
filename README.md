@@ -15,7 +15,10 @@ More informations from [DSOD: Learning Deeply Supervised Object Detectors from S
 ## Train the model
 
 ```
+# train dsod
 python train.py
+# train grp-dsod
+python train.py --network grpdsod --data-shape 320
 # see advanced arguments for training
 python train.py -h
 ```
