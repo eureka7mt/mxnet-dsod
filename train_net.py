@@ -45,7 +45,6 @@ def validate(net, val_data, ctx, valid_metric, clip=False):
         cls_probs = nd.SoftmaxActivation(cls_preds.transpose((0,2,1)), mode='channel')
         z = MultiBoxDetection(cls_probs, box_preds, anchors, force_suppress=False, clip=clip, nms_threshold=0.45, nms_topk=400)
         valid_metric.update(y, z)
-
     return 0
 
 class FocalLoss(gluon.loss.Loss):
@@ -373,8 +372,8 @@ def train_net(network, train_path, ctx, accum_batch_size, num_classes, batch_siz
             validate(net, val_iter, ctx, valid_metric, clip=clip)
             names, values = valid_metric.get()
             for k in range(len(names)):
-                print(names[k] + ':' + values[k])
+                print(names[k] + ':' + str(values[k]))
                 with codecs.open('%s_log'%network, 'a+', 'utf8') as f:
-                    f.write(names[k] + ':' + values[k] + '\r\n')
+                    f.write(names[k] + ':' + str(values[k]) + '\r\n')
 
         net.collect_params().save('model/Dsod_Epoch%d.params'%epoch)
