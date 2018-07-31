@@ -35,23 +35,18 @@ def training_targets(anchors, class_preds, labels, min_neg_ratio):
     class_preds=class_preds.transpose(axes=(0, 2, 1))
     return MultiBoxTarget(anchors, labels, class_preds, negative_mining_ratio=min_neg_ratio)
 
-def validate(net, val_data, ctx, valid_metric, iter_size, batch_size, min_neg_ratio, clip=False):
-    cls_metric = metric.Accuracy(ignore_label=-1)
-    box_metric = metric.MAE()
+def validate(net, val_data, ctx, valid_metric, clip=False):
+    val_data.reset()
     valid_metric.reset()
     for i, batch in enumerate(val_data):
-        for j in range(iter_size):
-            x = batch.data[0][j*batch_size:(j+1)*batch_size].as_in_context(ctx)
-            y = batch.label[0][j*batch_size:(j+1)*batch_size].as_in_context(ctx)
-            box_preds, class_preds, anchors = net(x)
-            box_target, box_mask, cls_target = training_targets(anchors, class_preds, y, min_neg_ratio)
-            cls_probs = nd.SoftmaxActivation(class_preds.transpose((0,2,1)), mode='channel')
-            z = MultiBoxDetection(cls_probs, box_preds, anchors, force_suppress=False, clip=clip, nms_threshold=0.45, nms_topk=400)
-            cls_metric.update([cls_target], [class_preds.transpose((0,2,1))])
-            box_metric.update([box_target], [box_preds * box_mask])
-            valid_metric.update(y,z)
+        x = batch.data[0].as_in_context(ctx)
+        y = batch.label
+        box_preds, cls_preds, anchors = net(x)
+        cls_probs = nd.SoftmaxActivation(cls_preds.transpose((0,2,1)), mode='channel')
+        z = MultiBoxDetection(cls_probs, box_preds, anchors, force_suppress=False, clip=clip, nms_threshold=0.45, nms_topk=400)
+        valid_metric.update(y, z)
 
-    return cls_metric, box_metric, valid_metric
+    return 0
 
 class FocalLoss(gluon.loss.Loss):
     def __init__(self, axis=-1, alpha=0.25, gamma=2, batch_axis=0, **kwargs):
@@ -255,7 +250,9 @@ def train_net(network, train_path, ctx, accum_batch_size, num_classes, batch_siz
     val_list = ""
     train_iter = DetRecordIter(train_path, accum_batch_size, data_shape, mean_pixels=mean_pixels,
                                label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
-    val_iter = DetRecordIter(val_path, accum_batch_size, data_shape, mean_pixels=mean_pixels,
+    #val_iter = DetRecordIter(val_path, accum_batch_size, data_shape, mean_pixels=mean_pixels,
+    #                             label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+    val_iter = DetRecordIter(val_path, 32, data_shape, mean_pixels=mean_pixels,
                                  label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
     if network =='dsod':
         sizes = [[.1, .141], [.2, .272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
@@ -372,15 +369,12 @@ def train_net(network, train_path, ctx, accum_batch_size, num_classes, batch_siz
         print('Epoch %2d, train %s %.2f, %s %.5f, time %.1f sec' % (epoch, *cls_metric.get(), *box_metric.get(), time.time()-tic))
         with codecs.open('%s_log'%network, 'a+', 'utf8') as f:
             f.write('Epoch %2d, train %s %.2f, %s %.5f, time %.1f sec' % (epoch, *cls_metric.get(), *box_metric.get(), time.time()-tic) + '\r\n')
-        if epoch % 1000 == 0:
-            val_cls_metric, val_box_metric, val_valid_metric = validate(net, val_iter, ctx, valid_metric, iter_size, batch_size, min_neg_ratio, clip=clip)
-            names, values = val_valid_metric.get()
-            print('Epoch %2d, val %s %.2f, %s %.5f' % (epoch, *val_cls_metric.get(), *val_box_metric.get()))
-            with codecs.open('%s_log'%network, 'a+', 'utf8') as f:
-                f.write('Epoch %2d, val %s %.2f, %s %.5f' % (epoch, *val_cls_metric.get(), *val_box_metric.get()) + '\r\n')
+        if (epoch+1) % 1000 == 0:
+            validate(net, val_iter, ctx, valid_metric, clip=clip)
+            names, values = valid_metric.get()
             for k in range(len(names)):
-                print(names[i] + ':' + values[i])
+                print(names[k] + ':' + values[k])
                 with codecs.open('%s_log'%network, 'a+', 'utf8') as f:
-                    f.write(names[i] + ':' + values[i] + '\r\n')
+                    f.write(names[k] + ':' + values[k] + '\r\n')
 
         net.collect_params().save('model/Dsod_Epoch%d.params'%epoch)
