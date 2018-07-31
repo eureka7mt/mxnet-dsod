@@ -6,7 +6,7 @@ from train_net import train_net
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train a Single-shot detection network')
+    parser = argparse.ArgumentParser(description='Train a detection network')
     parser.add_argument('--train-path', dest='train_path', help='train record to use',
                         default=os.path.join(os.getcwd(), 'data', 'train.rec'), type=str)
     parser.add_argument('--val-path', dest='val_path', help='validation record to use',
