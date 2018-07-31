@@ -298,7 +298,7 @@ def train_net(network, train_path, ctx, accum_batch_size, num_classes, batch_siz
         interm_layer = 0
         steps = [x / 320.0 for x in [8, 16, 32, 64, 100, 320]]
         
-        body = Gate_layer(prefix = 'GRP_')
+        body = Gate_layer(channel_nums=num_channels, prefix = 'GRP_')
         body.initialize(init.Xavier(magnitude=3), ctx=mx.gpu(0))
         
         class GrpDsod(nn.HybridBlock):
