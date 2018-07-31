@@ -184,16 +184,13 @@ def multibox_layer_forward(x, model, num_classes, sizes=[.2, .95],
                 mode="channel")
             scale = nd.full(shape=(1, num_channels[k], 1, 1), val=normalization[k])
             from_layer = nd.broadcast_mul(lhs=scale, rhs=from_layer)
-        '''if interm_layer > 0:
-            from_layer = mx.symbol.Convolution(data=from_layer, kernel=(3,3), \
-                stride=(1,1), pad=(1,1), num_filter=interm_layer, \
-                name="{}_inter_conv".format(from_name))
-            from_layer = mx.symbol.Activation(data=from_layer, act_type="relu", \
-                name="{}_inter_relu".format(from_name))'''
+        #if interm_layer > 0:
+        #    from_layer = mx.symbol.Convolution(data=from_layer, kernel=(3,3), \
+        #        stride=(1,1), pad=(1,1), num_filter=interm_layer, \
+        #        name="{}_inter_conv".format(from_name))
+        #    from_layer = mx.symbol.Activation(data=from_layer, act_type="relu", \
+        #        name="{}_inter_relu".format(from_name))
 
-        # estimate number of anchors per location
-        # here I follow the original version in caffe
-        # TODO: better way to shape the anchors??
         size = sizes[k]
         assert len(size) > 0, "must provide at least one size"
         size_str = "(" + ",".join([str(x) for x in size]) + ")"
