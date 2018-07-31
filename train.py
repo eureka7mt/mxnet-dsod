@@ -85,7 +85,7 @@ def parse_class_names(args):
 
 if __name__ == '__main__':
     args = parse_args()
-    args.lr_refactor_step = args.lr_refactor_step.split(',')
+    args.lr_refactor_step = list(map(int, args.lr_refactor_step.split(',')))
     # context list
     ctx = [mx.gpu(int(i)) for i in args.gpus.split(',') if i.strip()]
     ctx = [mx.cpu()] if not ctx else ctx
