@@ -21,6 +21,6 @@ python train.py -h
 ```
 
 ## TODO
-1. Mutil-GPU support.I just have one gpu now,so I don't konw whether the [Synchronized Batch Normalization](https://github.com/zhanghang1989/MXNet-Gluon-SyncBN) works well or not.I will updata it when I can use more gpu.Or you can modify it by youself.
+1. Mutil-GPUs support.I just have one gpu now,so I don't konw whether the [Synchronized Batch Normalization](https://github.com/zhanghang1989/MXNet-Gluon-SyncBN) works well or not.I will updata it when I can use more gpu.Or you can modify it by youself.
 2. A pretrained model.DSOD and Grp-dsod converge very slowly,the author gets a good performance by training them 100000 epochs on VOC.It will take a long time.And I will train it if my gpu is free.Don't expect too much.
 3. Training on a small dataset.
