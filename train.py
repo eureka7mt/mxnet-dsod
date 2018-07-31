@@ -39,7 +39,7 @@ def parse_args():
                         help='green mean value')
     parser.add_argument('--mean-b', dest='mean_b', type=float, default=104,
                         help='blue mean value')
-    parser.add_argument('--lr-steps', dest='lr_refactor_step', type=list, default=[20000, 40000, 60000, 80000],
+    parser.add_argument('--lr-steps', dest='lr_refactor_step', type=str, default='20000, 40000, 60000, 80000',
                         help='refactor learning rate at specified epochs')
     parser.add_argument('--lr-factor', dest='lr_refactor_ratio', type=int, default=0.1,
                         help='ratio to refactor learning rate')
@@ -85,6 +85,7 @@ def parse_class_names(args):
 
 if __name__ == '__main__':
     args = parse_args()
+    args.lr_refactor_step = args.lr_refactor_step.split(',')
     # context list
     ctx = [mx.gpu(int(i)) for i in args.gpus.split(',') if i.strip()]
     ctx = [mx.cpu()] if not ctx else ctx
